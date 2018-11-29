@@ -58,3 +58,17 @@ public:
 
   // Other stuff...
 }
+
+// The Subject then sends notifications by walking the list and calling methods
+class Subject
+{
+protected:
+  void notify(const Entity& entity, Event event)
+  {
+    for (int i = 0; i < numObservers_; i++)
+    {
+      observers_[i]->onNotify(entity, event);
+    }
+  }
+  // Other stuff...
+}
