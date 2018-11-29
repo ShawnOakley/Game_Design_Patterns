@@ -72,3 +72,43 @@ protected:
   }
   // Other stuff...
 }
+
+
+// Adding and removing observers without any dynamic allocation
+// Using 'Linked observers'
+
+// Can thread the reference to the subject through
+// the observers themselves
+
+// Put pointer to head of list of observers in Subject
+class Subject 
+{
+  Subject()
+  : head_(NULL)
+  {
+
+  private:
+    Observer* head_;
+  }
+}
+
+// Extend Observer with a pointer to the next observer in the list:
+class Observer
+{
+  friend class Subject;
+  // A friend class can access private and protected members of other class in which it is declared as friend.
+public:
+  Observer()
+  : next_(NULL)
+  {}
+
+private:
+  Observer* next_;
+}
+
+// Registering a new observable means inserting it at front
+void Subject::addObserver(Observer* observer)
+{
+  observer->next_ = head_;
+  head_ = observer;
+}
