@@ -78,3 +78,47 @@ void Heroine::update()
 // Allow an object to alter its behavior
 // when its internal state changes.
 // The object will appear to change its class.
+
+// 1) Define interface for the state
+// All behavior that is state-dependent 
+// becomes a virtual method in the interface
+
+class HeroineState
+{
+public:
+  virtual ~HeroineState() {}
+  virtual void handleInput(Heroine& heroine, Input input) {}
+  virtual void update(Heroine& heroine) {}
+};
+
+// 2) Define a class for each state
+//  Methods determine characters behavior when in that state
+
+//Example:
+
+class DuckingState : public HeroineState
+{
+public:
+  DuckingState()
+  : chargeTime_(0)
+  {}
+
+  virtual void handleInput(Heroine& heroine, Input input) {
+    if (input == RELEASE_DOWN)
+    {
+      // Change to standing state...
+      heroine.setGraphics(IMAGE_STAND);
+    }
+  }
+
+  virtual void update(Heroine& heroine) {
+    chargeTime_++;
+    if (chargeTime_ > MAX_CHARGE)
+    {
+      heroine.superBomb();
+    }
+  }
+
+private:
+  int chargeTime_;
+};
