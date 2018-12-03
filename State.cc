@@ -122,3 +122,110 @@ public:
 private:
   int chargeTime_;
 };
+
+// 3) Delegate to the state
+// Give the Heroine a pointer to her current state
+// Delegate to the state
+
+class Heroine
+{
+    public:
+        virtual void handleInput(Input input);
+        {
+            state_->handleInput(*this, input);
+        }
+
+        virtual void update()
+        {
+            state_->update(*this);
+        }
+
+        private:
+            HeroineState* state_;
+};
+
+// In order to change state, need to assign state_ to point to a different HeroineState object
+
+// Different kinds of state objects
+// 1) Static states
+// Example:
+
+class HeroineState
+{
+public:
+  static StandingState standing;
+  static DuckingState ducking;
+  static JumpingState jumping;
+  static DivingState diving;
+
+  // Other code...
+};
+
+// So to make the heroine jump
+// standing state would call jumping from heroine
+if (input == PRESS_B)
+{
+  heroine.state_ = &HeroineState::jumping;
+  heroine.setGraphics(IMAGE_JUMP);
+}
+
+// 2) Instantiated state
+// However, if state needs to track something internally 
+// E.g., a timer.  We can return new state from handleInput call and set that to state_
+
+void Heroine::handleInput(Input input)
+{
+  HeroineState* state = state_->handleInput(*this, input);
+  if (state != NULL)
+  {
+    delete state_;
+    state_ = state;
+  }
+}
+
+
+
+// IMPROVEMENTS:
+// Concurrent State Machines --
+// Two state machines running concurrently in same class
+
+// Hierarchical State Machine -- 
+// A state can have a superstate (making itself a substate). When an event comes in, if the substate doesn’t handle it, it rolls up the chain of superstates. In other words, it works just like overriding inherited methods.
+
+
+// Define a base class
+class OnGroundState : public HeroineState
+{
+public:
+  virtual void handleInput(Heroine& heroine, Input input)
+  {
+    if (input == PRESS_B)
+    {
+      // Jump...
+    }
+    else if (input == PRESS_DOWN)
+    {
+      // Duck...
+    }
+  }
+};
+
+
+// Then each substate inherits it
+class DuckingState : public OnGroundState
+{
+public:
+  virtual void handleInput(Heroine& heroine, Input input)
+  {
+    if (input == RELEASE_DOWN)
+    {
+      // Stand up...
+    }
+    else
+    {
+      // Didn't handle input, so walk up hierarchy.
+      OnGroundState::handleInput(heroine, input);
+    }
+  }
+};
+
