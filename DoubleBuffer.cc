@@ -86,3 +86,14 @@ private:
   Framebuffer* current_;
   Framebuffer* next_;
 };
+
+
+//Issue -- Swapping pointers to references or copying data between buffers
+
+// If the buffer is monolithic:
+
+// Swapping is simpler. Since there is only one pair of buffers, a single swap does it. If you can swap by changing pointers, then you can swap the entire buffer, regardless of size, with just a couple of assignments.
+
+// If many objects have a piece of data:
+
+// Swapping is slower. In order to swap, we need to iterate through the entire collection of objects and tell each one to swap.
